@@ -9,7 +9,9 @@ router.post('/getAddresses', async (req, res) => {
 
         const val = req.body.address;
 
-        let arr = await models.DataBase.find({ address: { $regex: val, $options: 'i' } }, { address: 1 }).limit(5);
+        let str_search = `.*${val.split(' ').join('.*')}.*`;
+
+        let arr = await models.DataBase.find({ address: { $regex: str_search, $options: 'si' } }, { address: 1 }).limit(5);
 
         res.json({ ok: true, arr });
 

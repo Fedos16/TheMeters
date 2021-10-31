@@ -129,7 +129,7 @@ async function parseCSV() {
               let row_org = {};
               let estimate = `org_${row}_estimate`;
               if (estimate in csvrow) row_org[estimate] = csvrow[estimate];
-              let claster_score = `org_${row}_medium_claster_score`;
+              let claster_score = `org_${row}_medium_cluster_score`;
               if (claster_score in csvrow) row_org[claster_score] = csvrow[claster_score];
               let score = `org_${row}_score`;
               if (score in csvrow) row_org[score] = csvrow[score];

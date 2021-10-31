@@ -189,9 +189,23 @@ async function getDataForValue(val) {
         
         let code = '';
         for (let row of arr) {
+            let source
             let address = row.address;
-            let indexText = String(address).toLowerCase().indexOf(String(val).toLowerCase());
-            let codeAddress = `${String(address).substring(0, indexText)}<span style="font-weight: bold; color: black;">${String(address).substring(indexText, indexText + val.length)}</span>${String(address).substring(indexText + val.length)}`;
+            let myAddress = address;
+            let codeAddress = '';
+
+            let startIndex = 0;
+
+            let splitArrdess = val.split(' ');
+
+            for (let vall of splitArrdess) {
+                if (!vall) continue;
+                let index = String(myAddress).toLowerCase().indexOf(String(vall).toLowerCase());
+                codeAddress += `${String(address).substring(startIndex, index)}<span style="font-weight: bold; color: black;">${String(address).substring(index, index + vall.length)}</span>`;
+                startIndex = index + String(vall).length;
+            }
+            codeAddress += String(address).substring(startIndex);
+            
             code += `<li id="${row._id}">${codeAddress}</li>`;
         }
 
@@ -218,7 +232,7 @@ async function getDataForValue(val) {
     // Ограничение в 200мс для того чтобы на каджый символ не реагировал поисковик
     INFO_ROW.Timer = setTimeout(async () => {
         await setQueryForServer({ url, params }, action_function);
-    }, 200)
+    }, 300)
 }
 function appendPointToMap(coords) {
     let myPlacemark = new ymaps.Placemark(coords, {
@@ -267,14 +281,24 @@ async function searchInfoForAddress(e) {
         let strSubway = '';
         if (subway) strSubway = `м. ${subway} (${minTil} мин. ${methodSubway})`;
         document.querySelector('.main__map__address').textContent = `${info.address} ${strSubway}`;
-        document.querySelector('.main__map__Infrastructure span').textContent = info.infrastructure_level;
+
+        let infrastructure_text = 'Плохая';
+        let infrastructure_score = Number(info.infrastructure_score);
+
+        if (infrastructure_score >= 15 && infrastructure_score < 60) {
+            infrastructure_text = 'Нормальная';
+        } else if (infrastructure_score >= 60 && infrastructure_score < 150) {
+            infrastructure_text = 'Хорошая';
+        } else if (infrastructure_score >= 150) {
+            infrastructure_text = 'Очень хорошая';
+        }
+
+        document.querySelector('.main__map__Infrastructure span').textContent = infrastructure_text;
 
         // Объекты рядом
         let strNear = info.objects_near;
         if (strNear) strNear = String(strNear).split(',');
         let arrNear = [];
-
-        console.log(strNear);
 
         if (strNear.length > 0) {
             for (let row of strNear) {
@@ -288,6 +312,7 @@ async function searchInfoForAddress(e) {
             }
         }
 
+        if (arrNear.length == 0) arrNear.push('-');
 
         document.querySelector('.main__map__nearby span').textContent = arrNear.join(', ');
 
@@ -310,11 +335,13 @@ async function searchInfoForAddress(e) {
                 if (item.indexOf('near') != -1) near = orgs[i][item];
                 if (item.indexOf('score') != -1) score = orgs[i][item];
                 if (item.indexOf('estimate') != -1) estimate = orgs[i][item];
+                if (item.indexOf('medium_cluster_score') != -1) medium_claster_score = orgs[i][item];
             });
 
             if (!score) estimate = 'мало данных';
             if (score == 'inf') estimate = '-';
             if (score && score != 'inf') score = Math.round(score);
+            if (medium_claster_score && medium_claster_score != 'inf') medium_claster_score = Math.round(medium_claster_score);
 
             let inhabitants = Math.round(info.inhabitants_num);
             infoOrgs[name] = { near, score, medium_claster_score, estimate, inhabitants };
@@ -342,6 +369,8 @@ async function searchInfoForAddress(e) {
             (i < orgs.length / 2) ?  listOrg_1 += code : listOrg_2 += code;
 
         }
+
+        if (openArr.length == 0) openArr.push('-');
 
         document.querySelector('.main__map__info b').textContent = openArr.join(', ');
 
