@@ -340,10 +340,12 @@ async function searchInfoForAddress(e) {
 
             if (medium_claster_score == 'inf') medium_claster_score = 0;
 
-            if (!score) estimate = 'мало данных';
-            if (score == 'inf') estimate = '-';
+            if (!score || score == 'inf' || score == 0) estimate = '-';
+            if ((score == 'inf' || !score || score == 0) && (!near || near == 'inf' || near == 0)) estimate = 'Мало данных';
             if (score && score != 'inf') score = Math.round(score);
             if (medium_claster_score && medium_claster_score != 'inf') medium_claster_score = Math.round(medium_claster_score);
+
+            console.log(`${name}: SCORE: ${score}, NEAR: ${near} == ${estimate}`);
 
             let inhabitants = Math.round(info.inhabitants_num);
             infoOrgs[name] = { near, score, medium_claster_score, estimate, inhabitants };
