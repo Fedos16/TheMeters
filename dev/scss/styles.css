@@ -576,7 +576,7 @@ h1,h2,h3,h4,h5,h6{font-size: inherit;font-weight: 400;}
 		margin: 15px 0px;
 	}
 	.main__map {
-		padding: 25px;
+		padding: 25px 10px;
 	}
 	.main__map__find__button {
 		min-width: 100px;
@@ -648,7 +648,7 @@ h1,h2,h3,h4,h5,h6{font-size: inherit;font-weight: 400;}
 		padding: 0px 15px;
 	}
 	.conteiner {
-		padding: 0px 20px;
+		padding: 0px 10px;
 	}
 }
 @media screen and (max-width: 480px) {
@@ -664,7 +664,7 @@ h1,h2,h3,h4,h5,h6{font-size: inherit;font-weight: 400;}
 		padding: 0px 10px;
 	}
 	.main__map {
-		padding: 20px;
+		padding: 20px 10px;
 	}
 	.main__map__categories__categoriest__heading {
 		font-size: 14px;

@@ -338,6 +338,8 @@ async function searchInfoForAddress(e) {
                 if (item.indexOf('medium_cluster_score') != -1) medium_claster_score = orgs[i][item];
             });
 
+            if (medium_claster_score == 'inf') medium_claster_score = 0;
+
             if (!score) estimate = 'мало данных';
             if (score == 'inf') estimate = '-';
             if (score && score != 'inf') score = Math.round(score);

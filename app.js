@@ -10,7 +10,6 @@ const routes = require('./routes');
 const models = require('./models');
 
 const {GoogleSheets} = require('./utils');
-var {google} = require('googleapis');
 
 const fs = require('fs'); 
 const parse = require('csv-parser');
@@ -164,64 +163,3 @@ async function parseCSV() {
 
   
 }
-
-GoogleSheets(async auth => {
-  return;
-  const sheets = google.sheets({ version: 'v4', auth });
-  var param = {
-      spreadsheetId: '1BS45n58snP-vE3Vc_XcW-W5w8av0g9wWazbtH_ghrIc',
-      range: 'test-data' + '!A1:EB'
-  }
-  try {
-
-      var datas = await sheets.spreadsheets.values.get(param);
-      var arr = datas.data.values;
-
-      let title = arr.shift();
-      let head = arr.shift();
-      let data = arr;
-
-      let arr_new = [];
-
-      for (let row of data) {
-        let index = 0;
-        let status = true;
-        let arr_org = [];
-        let obj = {};
-        for (let col of row) {
-          if (head[index].indexOf('org') != -1 && head[index].indexOf('near') != -1) {
-            status = false;
-            if (title[index] != 'Число организаций') {
-              arr_org.push({
-                name: title[index],
-                near: Number(col),
-                score: Number(row[index + 1]),
-                medium_claster_score: Number(row[index + 2]),
-                estimate: row[index + 3]
-              });
-            }
-          }
-
-          if (status) {
-            let val = row[index];
-            if (Number(val)) val = Number(val);
-
-            if (index == 0) val = new Date(val);
-            
-            obj[head[index]] = val;
-          }
-
-          index ++;
-        }
-        obj['Organizations'] = arr_org;
-        arr_new.push(obj);
-      }
-
-      await models.DataBase.remove();
-      await models.DataBase.insertMany(arr_new);
-
-
-  } catch(e) {
-    console.log(e);
-  }
-});
